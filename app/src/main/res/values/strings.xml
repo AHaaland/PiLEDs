@@ -1,0 +1,6 @@
+<resources>
+    <string name="app_name">PiApp</string>
+    <string name="rpi3Label">Raspberry Pi 3</string>
+    <string name="led_on">LED On</string>
+    <string name="led_off">LED OFF</string>
+</resources>
