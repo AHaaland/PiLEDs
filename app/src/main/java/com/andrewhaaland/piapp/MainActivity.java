@@ -31,7 +31,7 @@ public class MainActivity extends AppCompatActivity {
         public void onReceive(Context context, Intent intent){
             String message = intent.getStringExtra(MyService.MY_SERVICE_PAYLOAD);
             //label.append(message + "\n");
-            JSONObject res=null;
+            JSONObject res;
                 try {
                     res = new JSONObject(message);
                     int stat = res.getInt("pinAction");
@@ -84,7 +84,7 @@ public class MainActivity extends AppCompatActivity {
     {
         if(networkOK) {
             Intent on = new Intent(this, MyService.class);
-            if(LEDon == true) {
+            if(LEDon) {
                 on.setData(Uri.parse(LED_BLUE + "&2"));
             }
             else {
@@ -110,7 +110,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-
     }
 
 
