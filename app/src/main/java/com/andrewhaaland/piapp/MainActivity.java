@@ -12,6 +12,7 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -29,6 +30,7 @@ import com.andrewhaaland.piapp.services.MyService;
 public class MainActivity extends AppCompatActivity {
     TextView label;
     private static final String LED_BLUE = "http://104.162.45.205:5001/17";
+    private static final String LED_RGB = "http://104.162.45.205:5001/rgb/";
     private boolean networkOK;
     private String selectedColor = null;
 
@@ -62,6 +64,8 @@ public class MainActivity extends AppCompatActivity {
         Button rPi3on = (Button)findViewById(R.id.button);
         Button rpi3off = (Button)findViewById(R.id.button2);
         Button getColorRGB = (Button)findViewById(R.id.button3);
+        Button rgbOn = (Button)findViewById(R.id.button4);
+        Button rgbOff = (Button)findViewById(R.id.button5);
         label = (TextView)findViewById(R.id.textView);
         final TextView colorText = (TextView) findViewById(R.id.textView2);
         networkOK = NetworkHelper.hasNetworkAccess(this);
@@ -81,6 +85,24 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        rgbOn.setOnClickListener(new View.OnClickListener() {
+            public static final String TAG = "";
+
+            @Override
+            public void onClick(View v) {
+                Log.i(TAG, selectedColor);
+                runClickHandlerRGB(v,selectedColor,true);
+            }
+        });
+        rgbOff.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                runClickHandlerRGB(v,selectedColor,false);
+            }
+        });
+
+
+
         getColorRGB.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
@@ -98,7 +120,7 @@ public class MainActivity extends AppCompatActivity {
                         if(!color_pick.getSelectedItem().toString().equalsIgnoreCase("Choose a Color…")){
                             selectedColor = color_pick.getSelectedItem().toString();
                             //TODO: This won't work, keeps appending colors!
-                            colorText.setText(colorText.getText().toString()+selectedColor);
+                            colorText.setText("Current Color: "+selectedColor);
                         }
                         dialog.dismiss();
                     }
@@ -147,10 +169,36 @@ public class MainActivity extends AppCompatActivity {
                    sb.dismiss();
                }
             });
-
             sb.show();
         }
     }
+
+    public void runClickHandlerRGB(View view, String color, Boolean LEDon) {
+        if(networkOK) {
+            Intent on = new Intent(this, MyService.class);
+            if (LEDon) {
+                on.setData(Uri.parse(LED_RGB + color.toLowerCase() + "&2"));
+            } else {
+                on.setData(Uri.parse(LED_RGB + color.toLowerCase() + "&1"));
+            }
+            startService(on);
+        }
+        else{
+            final Snackbar sb = Snackbar.make(findViewById(R.id.textView), "No Network!", Snackbar.LENGTH_LONG);
+            View sbV = sb.getView();
+            TextView tvSnack = (TextView) sbV.findViewById(android.support.design.R.id.snackbar_text);
+            tvSnack.setGravity(Gravity.CENTER_HORIZONTAL);
+            sb.setAction("Dismiss", new View.OnClickListener(){
+                public void onClick(View v){
+                    sb.dismiss();
+                }
+            });
+            sb.show();
+        }
+    }
+
+
+
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
