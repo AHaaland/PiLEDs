@@ -3,4 +3,10 @@
     <string name="rpi3Label">Raspberry Pi 3</string>
     <string name="led_on">LED On</string>
     <string name="led_off">LED OFF</string>
+    <string-array name="colors">
+        <item>Choose a Color…</item>
+        <item>Blue</item>
+        <item>Green</item>
+        <item>Red</item>
+    </string-array>
 </resources>

@@ -2,18 +2,24 @@ package com.andrewhaaland.piapp;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Configuration;
 import android.net.Uri;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import org.json.*;
 
 import com.andrewhaaland.piapp.Utils.NetworkHelper;
@@ -24,7 +30,7 @@ public class MainActivity extends AppCompatActivity {
     TextView label;
     private static final String LED_BLUE = "http://104.162.45.205:5001/17";
     private boolean networkOK;
-
+    private String selectedColor = null;
 
     private BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
         @Override
@@ -55,7 +61,9 @@ public class MainActivity extends AppCompatActivity {
 
         Button rPi3on = (Button)findViewById(R.id.button);
         Button rpi3off = (Button)findViewById(R.id.button2);
+        Button getColorRGB = (Button)findViewById(R.id.button3);
         label = (TextView)findViewById(R.id.textView);
+        final TextView colorText = (TextView) findViewById(R.id.textView2);
         networkOK = NetworkHelper.hasNetworkAccess(this);
         label.append("\nNetwork Ok!: " + networkOK);
         LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(mBroadcastReceiver, new IntentFilter(MyService.MY_SERVICE_MESSAGE));
@@ -71,6 +79,43 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v){
                 runClickHandler(v,false);
             }
+        });
+
+        getColorRGB.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                AlertDialog.Builder mBuilder = new AlertDialog.Builder(MainActivity.this);
+                View mView = getLayoutInflater().inflate(R.layout.color_picker_dialog, null);
+                mBuilder.setTitle("Pick a Color!");
+                final Spinner color_pick = (Spinner)mView.findViewById(R.id.spinner);
+                ArrayAdapter<String> adapter = new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_spinner_item, getResources().getStringArray(R.array.colors));
+                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                color_pick.setAdapter(adapter);
+
+                mBuilder.setPositiveButton("Ok", new DialogInterface.OnClickListener(){
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        if(!color_pick.getSelectedItem().toString().equalsIgnoreCase("Choose a Color…")){
+                            selectedColor = color_pick.getSelectedItem().toString();
+                            //TODO: This won't work, keeps appending colors!
+                            colorText.setText(colorText.getText().toString()+selectedColor);
+                        }
+                        dialog.dismiss();
+                    }
+                });
+
+                mBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener(){
+
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+                mBuilder.setView(mView);
+                AlertDialog aDialog = mBuilder.create();
+                aDialog.show();
+            }
+
         });
     }
 
