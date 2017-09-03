@@ -28,7 +28,7 @@ public class HttpHelper {
             URL url = new URL(address);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setReadTimeout(10000);
-            conn.setConnectTimeout(15000);
+            conn.setConnectTimeout(1500000);
             conn.setRequestMethod("GET");
             conn.setDoInput(true);
             conn.connect();

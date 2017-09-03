@@ -31,8 +31,10 @@ public class MainActivity extends AppCompatActivity {
     TextView label;
     private static final String LED_BLUE = "http://104.162.45.205:5001/17";
     private static final String LED_RGB = "http://104.162.45.205:5001/rgb/";
+    private static final String TEMP_READ = "http://104.162.45.205:5000/temp";
     private boolean networkOK;
     private String selectedColor = null;
+    TextView tempLabel;
 
     private BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
         @Override
@@ -42,14 +44,21 @@ public class MainActivity extends AppCompatActivity {
             JSONObject res;
                 try {
                     res = new JSONObject(message);
-                    int stat = res.getInt("pinAction");
-                    String pin = res.getString("pinNum");
-                    String visStat = stat == 1 ? "off" : "on";
-                    Snackbar sb = Snackbar.make(findViewById(R.id.textView), pin + " has been turned " + visStat + "!" , Snackbar.LENGTH_LONG);
-                    View sbV = sb.getView();
-                    TextView tvSnack = (TextView) sbV.findViewById(android.support.design.R.id.snackbar_text);
-                    tvSnack.setGravity(Gravity.CENTER_HORIZONTAL);
-                    sb.show();
+                    Log.i("TempCrash",res.has("pinAction")+" ");
+                    if(res.has("pinAction")){
+                        int stat = res.getInt("pinAction");
+                        String pin = res.getString("pinNum");
+                        String visStat = stat == 1 ? "off" : "on";
+                        Snackbar sb = Snackbar.make(findViewById(R.id.textView), pin + " has been turned " + visStat + "!" , Snackbar.LENGTH_LONG);
+                        View sbV = sb.getView();
+                        TextView tvSnack = (TextView) sbV.findViewById(android.support.design.R.id.snackbar_text);
+                        tvSnack.setGravity(Gravity.CENTER_HORIZONTAL);
+                        sb.show();
+                    }
+                    else{
+                        Double temp = res.getDouble("tempF");
+                        tempLabel.append(temp.toString());
+                    }
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -68,9 +77,12 @@ public class MainActivity extends AppCompatActivity {
         Button rgbOff = (Button)findViewById(R.id.button5);
         label = (TextView)findViewById(R.id.textView);
         final TextView colorText = (TextView) findViewById(R.id.textView2);
+        tempLabel = (TextView) findViewById(R.id.textView3);
         networkOK = NetworkHelper.hasNetworkAccess(this);
         label.append("\nNetwork Ok!: " + networkOK);
         LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(mBroadcastReceiver, new IntentFilter(MyService.MY_SERVICE_MESSAGE));
+        runTemp();
+
 
         rPi3on.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -196,6 +208,29 @@ public class MainActivity extends AppCompatActivity {
             sb.show();
         }
     }
+
+    public void runTemp(){
+        if(networkOK) {
+            Intent intent = new Intent(this, MyService.class);
+            intent.setData(Uri.parse(TEMP_READ));
+            startService(intent);
+        }
+        else{
+            final Snackbar sb = Snackbar.make(findViewById(R.id.textView), "No Network!", Snackbar.LENGTH_LONG);
+            View sbV = sb.getView();
+            TextView tvSnack = (TextView) sbV.findViewById(android.support.design.R.id.snackbar_text);
+            tvSnack.setGravity(Gravity.CENTER_HORIZONTAL);
+            sb.setAction("Dismiss", new View.OnClickListener(){
+                public void onClick(View v){
+                    sb.dismiss();
+                }
+            });
+            sb.show();
+        }
+    }
+
+
+
 
 
 
