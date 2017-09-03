@@ -3,6 +3,11 @@
     <string name="rpi3Label">Raspberry Pi 3</string>
     <string name="led_on">LED On</string>
     <string name="led_off">LED OFF</string>
+    <string name="temp_in_room">Temp in room:</string>
+    <string name="rgb_off">RGB OFF</string>
+    <string name="rgb_on">RGB ON</string>
+    <string name="current_color">Current Color:</string>
+    <string name="rgb_color_selection">RGB Color Selection</string>
     <string-array name="colors">
         <item>Choose a Color…</item>
         <item>Blue</item>
