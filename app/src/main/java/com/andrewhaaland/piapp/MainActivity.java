@@ -29,9 +29,9 @@ import com.andrewhaaland.piapp.services.MyService;
 
 public class MainActivity extends AppCompatActivity {
     TextView label;
-    private static final String LED_BLUE = "http://104.162.45.205:5001/17";
-    private static final String LED_RGB = "http://104.162.45.205:5001/rgb/";
-    private static final String TEMP_READ = "http://104.162.45.205:5000/temp";
+    private static final String LED_BLUE = "XXXXX URL HERE";
+    private static final String LED_RGB = "XXXXX URL HERE";
+    private static final String TEMP_READ = "XXXXX URL HERE";
     private boolean networkOK;
     private String selectedColor = null;
     TextView tempLabel;
@@ -57,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                     else{
                         Double temp = res.getDouble("tempF");
-                        tempLabel.append(temp.toString());
+                        tempLabel.append(" "+ (int)Math.round(temp) + (char) 0x00B0+"F");
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -98,18 +98,46 @@ public class MainActivity extends AppCompatActivity {
         });
 
         rgbOn.setOnClickListener(new View.OnClickListener() {
-            public static final String TAG = "";
+            public static final String TAG = "Color";
 
             @Override
             public void onClick(View v) {
-                Log.i(TAG, selectedColor);
-                runClickHandlerRGB(v,selectedColor,true);
+                if(selectedColor != null) {
+                    runClickHandlerRGB(v, selectedColor, true);
+                }
+                else{
+                    final Snackbar sb = Snackbar.make(findViewById(R.id.textView), "Select a color!", Snackbar.LENGTH_LONG);
+                    View sbV = sb.getView();
+                    TextView tvSnack = (TextView) sbV.findViewById(android.support.design.R.id.snackbar_text);
+                    tvSnack.setGravity(Gravity.CENTER_HORIZONTAL);
+                    sb.setAction("Dismiss", new View.OnClickListener(){
+                        public void onClick(View v){
+                            sb.dismiss();
+                        }
+                    });
+                    sb.show();
+                }
+
             }
         });
         rgbOff.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
-                runClickHandlerRGB(v,selectedColor,false);
+                if (selectedColor!=null) {
+                    runClickHandlerRGB(v, selectedColor, false);
+                }
+                else{
+                    final Snackbar sb = Snackbar.make(findViewById(R.id.textView), "Select a color!", Snackbar.LENGTH_LONG);
+                    View sbV = sb.getView();
+                    TextView tvSnack = (TextView) sbV.findViewById(android.support.design.R.id.snackbar_text);
+                    tvSnack.setGravity(Gravity.CENTER_HORIZONTAL);
+                    sb.setAction("Dismiss", new View.OnClickListener(){
+                        public void onClick(View v){
+                            sb.dismiss();
+                        }
+                    });
+                    sb.show();
+                }
             }
         });
 
